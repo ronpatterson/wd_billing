@@ -1,0 +1,186 @@
+/*
+-- WildDog Billing Schema
+-- wd_billing.mongodb.txt
+
+-- MongoDB design version
+
+-- Revision 0.1, 20-Sep-2016
+
+-- Ron Patterson, WildDog Design
+
+-- collections document definitions
+*/
+
+db.counters : {
+    "_id" : string, // wdb_id
+    "seq" : int32
+}
+
+db.wdb_lookups {
+    "_id" : string, // wdb_type, wdb_category, wdb_status, wdb_priority, ...
+    'items' : [{ // array
+        "cd" : string,
+        "descr" : string,
+        "active" : string
+    }]
+}
+
+db.wdb_contacts {
+    "_id" : ObjectId,
+    "cname" : string,
+    "lname" : string,
+    "fname" : string,
+    "email" : [ string,... ],
+    "address" : {
+        "number" : string,
+        "street" : string,
+        "city" : string,
+        "state" : string,
+        "zip" : string,
+        "country" : string
+    },
+    "phone" : {
+        "work" : string,
+        "cell" : string,
+        "fax" : string
+    },
+    "type" : char, // wdb_type
+    "active" : char // y/n
+}
+
+db.wdb_clients {
+    "_id" : ObjectId,
+    "client_id" : string,
+    "client" : ObjectId, // wdb_contacts
+    "contacts" : [ ObjectId,... ], // wdb_contacts
+    "hourly_rate" : decimal,
+    "mileage_rate" : decimal,
+    "distance" : decimal,
+    "active" : char // y/n
+}
+
+db.wdb_projects {
+    "_id" : ObjectId,
+    "proj_cd" : string,
+    "name" : string,
+    "po_nbr" : string,
+    "status" : char, // wdb_status
+    "dates" : {
+        "due" : ISODate,
+        "started" : ISODate,
+        "completed" : ISODate
+    },
+    "links" : [{ // array
+        "url" : string,
+        "entry_dtm" : ISODate
+    }],
+    "notes" : [{ // array
+        "user_nm" : string
+        "comments" : string,
+        "entry_dtm" : ISODate
+    }],
+    "attachments" : [{ // array
+        "file_name" : string,
+        "file_size" : int32,
+        "file_hash" : string,
+        "entry_dtm" : ISODate
+    }]
+}
+
+db.wdb_working_slips {
+    "_id" : ObjectId,
+    "proj_cd": string, // wdb_projects
+    "name" : string,
+    "catagory" : char, // wdb_category
+    "kind" :  : char, // wdb_kind
+    "billable" : boolean,
+    "due_date" : ISODate,
+    "duration" : {
+        "hours": int,
+        "mins" : int
+    },
+    "rate" : number,
+    "comments" { string,
+    "log" : [{ // array
+        "start" : ISODate,
+        "end" : ISODate,
+        "comments" : string
+    }]
+}
+
+db.wdb_statements {
+    "_id" : ObjectId,
+    "proj_cd": string, // wdb_projects
+    "nbr" : string,
+    "inv_date" : ISODate,
+    "due_date" : ISODate,
+    "terms" : string,
+    "comments" : string,
+    "slips" : [ ObjectId... ]
+}
+
+db.wdb_users {
+    "_id" : ObjectId,
+    "uid" : string,
+    "lname" : string,
+    "fname" : string,
+    "email" : string,
+    "active" : char,
+    "roles" : [
+        string
+    ],
+    "pw" : string,
+    "wdb_group" : string
+}
+
+db.wdb_lookups.insert({
+    '_id'  :  'wdb_type',
+    'items'  :  [
+        {cd : 'i', descr : 'Individual, ', active : 'y'},
+        {cd : 'c', descr : 'Company', active : 'y'}
+    ]
+});
+db.wdb_lookups.insert({
+    '_id'  :  'wdb_status',
+    'items'  :  [
+        {cd : 'o', descr : 'Open', active : 'y'},
+        {cd : 'h', descr : 'Hold', active : 'y'},
+        {cd : 'w', descr : 'Working', active : 'y'},
+        {cd : 'y', descr : 'Awaiting Customer', active : 'y'},
+        {cd : 't', descr : 'Testing', active : 'y'},
+        {cd : 'c', descr : 'Closed', active : 'y'}
+    ]
+});
+db.wdb_lookups.insert({
+    '_id'  :  'wdb_priority',
+    'items'  :  [
+        {cd : '1', descr : 'High', active : 'y'},
+        {cd : '2', descr : 'Normal', active : 'y'},
+        {cd : '3', descr : 'Low', active : 'y'}
+    ]
+});
+db.wdb_lookups.insert({
+    '_id'  :  'wdb_category',
+    'items'  :  [
+        {cd : 'c', descr : 'Creative', active : 'y'},
+        {cd : 'd', descr : 'Design', active : 'y'},
+        {cd : 'v', descr : 'Development', active : 'y'},
+        {cd : 'e', descr : 'Editing', active : 'y'},
+        {cd : 'f', descr : 'Financial', active : 'y'},
+        {cd : 'm', descr : 'Meeting', active : 'y'},
+        {cd : 'o', descr : 'On-Site', active : 'y'},
+        {cd : 'r', descr : 'Research', active : 'y'},
+        {cd : 's', descr : 'Special', active : 'y'},
+        {cd : 'w', descr : 'Writing', active : 'y'}
+    ]
+});
+db.wdb_lookups.insert({
+    '_id'  :  'wdb_kind',
+    'items'  :  [
+        {cd : 't', descr : 'Timed', active : 'y'},
+        {cd : 'f', descr : 'Fixed', active : 'y'},
+        {cd : 'q', descr : 'Quantity', active : 'y'},
+        {cd : 'e', descr : 'Expense', active : 'y'},
+        {cd : 'm', descr : 'Mileage', active : 'y'}
+    ]
+});
