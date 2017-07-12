@@ -62,9 +62,14 @@ db.wdb_clients {
 db.wdb_projects {
     "_id" : ObjectId,
     "proj_cd" : string,
+    "client_id" : string, // wdb_clients
     "name" : string,
     "po_nbr" : string,
+    "priority" : char, // wdb_priority
     "status" : char, // wdb_status
+    "hourly_rate" : decimal,
+    "mileage_rate" : decimal,
+    "distance" : decimal,
     "dates" : {
         "due" : ISODate,
         "started" : ISODate,
