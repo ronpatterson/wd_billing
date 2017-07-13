@@ -71,6 +71,7 @@ db.wdb_projects {
     "mileage_rate" : decimal,
     "distance" : decimal,
     "dates" : {
+        "entered" : ISODate,
         "due" : ISODate,
         "started" : ISODate,
         "completed" : ISODate
@@ -134,9 +135,19 @@ db.wdb_users {
     "roles" : [
         string
     ],
-    "pw" : string,
-    "wdb_group" : string
+    "pw" : string
 }
+
+-- initial admin user account
+db.wdb_users.insert({
+    uid: 'admin',
+    lname: 'Admin',
+    fname: 'WD Billing',
+    email: 'wd_billing_admin@gmail.com',
+    active: 'y',
+    roles: [ 'admin' ],
+    pw: hex_md5('adminpw')
+});
 
 db.wdb_lookups.insert({
     '_id'  :  'wdb_type',

@@ -19,7 +19,7 @@ if (typeof(String.blank) == 'undefined')
 	}
 }
 
-var bt = // setup the bt namespace
+var wdb = // setup the wdb namespace
 {
 
 	login_content: { 'uid': 'rlpatter' },
@@ -30,9 +30,9 @@ var bt = // setup the bt namespace
 
 	check_session: function (event)
 	{
-		var params = "action=bt_check_session";
+		var params = "action=wdb_check_session";
 		$.ajax({
-			url: 'bt_check_session',
+			url: 'wdb_check_session',
 			type: 'post',
 			data: params,
 			dataType: 'html'
@@ -40,13 +40,13 @@ var bt = // setup the bt namespace
 		{
 			if (response == 0)
 			{
-				if (bt.stimer != 0) window.clearInterval(bt.stimer);
-				bt.stimer = 0;
-				bt.login_form();
+				if (wdb.stimer != 0) window.clearInterval(wdb.stimer);
+				wdb.stimer = 0;
+				wdb.login_form();
 			}
 			else
 			{
-				$('#bt_user_heading').show();
+				$('#wdb_user_heading').show();
 			}
 		});
 		return false;
@@ -54,15 +54,15 @@ var bt = // setup the bt namespace
 
 	login_form: function (event)
 	{
-		if (bt.stimer != 0) window.clearInterval(bt.stimer);
-		bt.stimer = 0;
-		$('#bt_user_heading').hide();
-		$('#bt_login_form input[type="password"]').val('');
+		if (wdb.stimer != 0) window.clearInterval(wdb.stimer);
+		wdb.stimer = 0;
+		$('#wdb_user_heading').hide();
+		$('#wdb_login_form input[type="password"]').val('');
 		$('#dialog-login').dialog({
 			width: 400,
 			maxHeight: 700,
 			modal: true,
-			title: 'BugTrack Login',
+			title: 'WD Billing Login',
 			show: 'fade',
 			hide: 'fade',
 			draggable: false,
@@ -72,17 +72,17 @@ var bt = // setup the bt namespace
 			//beforeClose: function( event, ui ) {return false;}
 		});
 		$('#login_errors').html('');
-		$('#bt_login_form').on('submit',bt.login_handler);
+		$('#wdb_login_form').on('submit',wdb.login_handler);
 		$('input[name="uid"]').focus();
 		return false;
 	},
 
 	login_handler: function (event)
 	{
-		var params = "action=bt_login_handler";
-		params += '&'+$('#bt_login_form').serialize();
+		var params = "action=wdb_login_handler";
+		params += '&'+$('#wdb_login_form').serialize();
 		$.ajax({
-			url: 'bt_login_handler',
+			url: 'wdb_login_handler',
 			type: 'post',
 			data: params,
 			dataType: 'html'
@@ -104,13 +104,13 @@ var bt = // setup the bt namespace
 // 						.css('right','1em')
 // 						.css('text-align','right')
 // 						.css('font-size','9pt')
-// 						.html('Welcome '+row.fname+' '+'<a href="#" onclick="return bt.logout_handler();">Logout</a>');
+// 						.html('Welcome '+row.fname+' '+'<a href="#" onclick="return wdb.logout_handler();">Logout</a>');
 // 					$('body').append(user);
-				$('#bt_user_name_top').html(row.fname+' '+row.lname);
-				$('#bt_user_heading').show();
-				$('#bt_admin_btn').show();
-				if (!/admin/.test(row.roles)) $('#bt_admin_btn').hide();
-				bt.stimer = window.setInterval(bt.check_session,300000);
+				$('#wdb_user_name_top').html(row.fname+' '+row.lname);
+				$('#wdb_user_heading').show();
+				$('#wdb_admin_btn').show();
+				if (!/admin/.test(row.roles)) $('#wdb_admin_btn').hide();
+				wdb.stimer = window.setInterval(wdb.check_session,300000);
 			}
 		});
 		return false;
@@ -118,18 +118,18 @@ var bt = // setup the bt namespace
 
 	logout_handler: function (event)
 	{
-		var params = "action=bt_logout_handler";
+		var params = "action=wdb_logout_handler";
 		$.ajax({
-			url: 'bt_logout_handler',
+			url: 'wdb_logout_handler',
 			type: 'post',
 			data: params,
 			dataType: 'html'
 		});
-		window.setTimeout(bt.check_session,1000); // a bit of a delay
+		window.setTimeout(wdb.check_session,1000); // a bit of a delay
 		return false;
 	},
 
-	buglist: function ( event, type )
+	projlist: function ( event, type )
 	{
 		//console.log(event,type);
 		var type2 = type ? type : '';
@@ -137,7 +137,7 @@ var bt = // setup the bt namespace
 		if (type2 == 'bytype')
 		{
 			//sel_val = " and bug_type = '"+$('select[name="bug_type2"]').val()+"'";
-			sel_val = {"bug_type": $('select[name="bug_type2"]').val()};
+			sel_val = {"proj_type": $('select[name="proj_type2"]').val()};
 		}
 		if (type2 == 'bystatus')
 		{
@@ -146,11 +146,11 @@ var bt = // setup the bt namespace
 		}
 		//$('#content_div').html(response);
 		$('#content_div').show();
-		bt.buglist2(event, type2, sel_val);
+		wdb.projlist2(event, type2, sel_val);
 		return false;
 	},
 
-	buglist2: function ( event, type, sel_arg )
+	projlist2: function ( event, type, sel_arg )
 	{
 		//console.log(event,type,sel_arg);
 		var params = {
@@ -158,18 +158,19 @@ var bt = // setup the bt namespace
 			'type': type,
 			'sel_arg': JSON.stringify(sel_arg)
 		};
-		$('#bt_tbl tbody').off( 'click', 'button');
-		var table = $('#bt_tbl').DataTable({
+		$('#wdb_tbl tbody').off( 'click', 'button');
+		var table = $('#wdb_tbl').DataTable({
 			'ajax': {
-				'url': 'bug_list',
+				'url': 'proj_list',
 				'type': 'get',
 				'data': params
 			},
 			'destroy': true,
 			'order': [[ 0, "asc" ]],
 			'columns': [
-				{'data': 'bug_id'},
-				{'data': 'descr'},
+				{'data': 'proj_cd'},
+				{'data': 'name'},
+				{'data': 'client'},
 				{'data': 'entry_dtm'},
 				{'data': 'status'},
 				null
@@ -180,44 +181,44 @@ var bt = // setup the bt namespace
 				'defaultContent': '<button>Show</button>'
 			} ]
 		});
-		$('#bt_tbl tbody').on( 'click', 'button', function () {
+		$('#wdb_tbl tbody').on( 'click', 'button', function () {
 			var data = table.row( $(this).parents('tr') ).data();
 			//alert( 'id='+data[4]);
-			bt.bugshowdialog(event,data._id);
+			wdb.projshowdialog(event,data._id);
 		} );
-		$('#bt_bugs_list').show();
+		$('#wdb_bugs_list').show();
 		return false;
 	},
 
-	bugadd: function ( event )
+	projadd: function ( event )
 	{
-		bt.showDialogDiv('BugTrack Bug Add','bt_bugs_show_edit');
-		$('#bugedit_errors').html('');
-		$('#bugedit_form1 input[type="text"]').val('');
-		$('#bugedit_form1 textarea').val('');
-		$('#euser').html(bt.login_content.uid);
-		$('input[name="bid"]').val('');
-		$('select[name="bt_group"]').val(bt.group_def);
+		wdb.showDialogDiv('WD Billing Project Add','wdb_projs_show_edit');
+		$('#projedit_errors').html('');
+		$('#projedit_form1 input[type="text"]').val('');
+		$('#projedit_form1 textarea').val('');
+		$('#euser').html(wdb.login_content.uid);
+		$('input[name="pid"]').val('');
+		$('select[name="wdb_group"]').val(wdb.group_def);
 		$('select[name="bug_type"]').val('');
 		$('select[name="status"]').val('o');
 		$('#assignedDiv2').html('');
-		$('#bt_assign_btn2').hide();
+		$('#wdb_assign_btn2').hide();
 		$('select[name="priority"]').val('3');
 		$('#filesDiv,#bfiles,#assignedDiv').html('');
-		$('.bt_date').html('');
+		$('.wdb_date').html('');
 		$('#bugshow_div').hide();
 		$('#bugedit_div').show();
 		return false;
 	},
 
-	edit_bug: function ( event, id )
+	edit_proj: function ( event, id )
 	{
-		var id2 = $('#bid').val();
+		var id2 = $('#pid').val();
 		if (id) id2 = id;
-		//alert('edit_bug '+id2);
+		//alert('edit_proj '+id2);
 		var params = "action=edit&id="+id2;
 		$.ajax({
-			url: 'bug_get',
+			url: 'proj_get',
 			type: 'get',
 			data: params,
 			dataType: 'json'
@@ -225,19 +226,19 @@ var bt = // setup the bt namespace
 		{
 			//$('#content_div').html(response);
 			//$('#bugshow_div').dialog('close');
-			//bt.showDialogDiv('BugTrack Bug '+data.bug_id,'bt_bugs_show_edit');
+			//wdb.showDialogDiv('BugTrack Bug '+data.bug_id,'wdb_bugs_show_edit');
 			$('#bugedit_errors').html('');
 			$('#bugedit_id').html(data.bug_id);
 			$('#oldstatus').val(data.status);
 			var grp = data.bug_id.replace(/\d+$/,'');
-			$('select[name="bt_group"]').val(grp);
+			$('select[name="wdb_group"]').val(grp);
 			$('input[name="descr"]').val(data.descr);
 			$('input[name="product"]').val(data.product);
 			$('select[name="bug_type"]').val(data.bug_type);
 			$('select[name="status"]').val(data.status);
 			$('select[name="priority"]').val(data.priority);
 			$('#assignedDiv2').html(data.aname);
-			$('#bt_assign_btn2').show();
+			$('#wdb_assign_btn2').show();
 			$('textarea[name="comments"]').val(data.comments);
 			$('textarea[name="solution"]').val(data.solution);
 			$('#edtm').html(data.edtm);
@@ -255,37 +256,37 @@ var bt = // setup the bt namespace
 		return false;
 	},
 	
-	bugshowdialog: function ( event, id )
+	projshowdialog: function ( event, id )
 	{
-		bt.showDialogDiv('BugTrack Bug','bt_bugs_show_edit');
-		bt.bugshow(event,id);
+		wdb.showDialogDiv('WD Billing Project','wdb_projs_show_edit');
+		wdb.projshow(event,id);
 		return false;
 	},
 
-	bugshow: function ( event, id )
+	projshow: function ( event, id )
 	{
 		//alert(id);
 		//var id2 = parseInt(id.replace(/[^\d]/g,''));
 		var params = "action=show&id="+id;
 		$.ajax({
-			url: 'bug_get',
+			url: 'proj_get',
 			type: 'get',
 			data: params,
 			dataType: 'json'
 		}).done(function (data)
 		{
 			//console.log(data);
-			bt.bug_doc = data;
-			$('#bt_bugs_show_edit').dialog('option','title','BugTrack Bug '+data.bug_id);
+			wdb.proj_doc = data;
+			$('#wdb_projs_show_edit').dialog('option','title','WD Billing Project '+data.bug_id);
 			var group_cd = data.bug_id.replace(/\d+$/,'');
-			$('#bt_admin_errors').html('');
-			$('#bug_id').val(data.bug_id);
-			$('#bug_id2_v').html(data.bug_id);
-			$('#bid').val(id);
-			$('#group_v').html(bt.get_lookup(bt.group_data.bt_group,group_cd));
+			$('#wdb_admin_errors').html('');
+			$('#proj_cd').val(data.proj_cd);
+			$('#proj_cd2_v').html(data.proj_cd);
+			$('#pid').val(id);
+			$('#group_v').html(wdb.get_lookup(wdb.group_data.wdb_group,group_cd));
 			$('#descr_v').html(data.descr);
 			$('#product_v').html(data.product);
-			$('#bt_v').html(bt.get_lookup(bt.group_data.bt_type,data.bug_type));
+			$('#wdb_v').html(wdb.get_lookup(wdb.group_data.wdb_type,data.bug_type));
 			$('#status_v').html(data.status_descr);
 			$('#priority_v').html(data.priority_descr);
 			$('#assignedDiv1').html(data.aname);
@@ -295,9 +296,9 @@ var bt = // setup the bt namespace
 			$('#edtm_v').html(data.edtm);
 			$('#udtm_v').html(data.udtm);
 			$('#cdtm_v').html(data.cdtm);
-			bt.get_files(event);
-			bt.worklog_show(event,data);
-			bt.bug_save_cancel();
+			wdb.get_files(event);
+			wdb.worklog_show(event,data);
+			wdb.bug_save_cancel();
 			$('#bugshow_div').show();
 		});
 		return false;
@@ -305,8 +306,8 @@ var bt = // setup the bt namespace
 
 	worklog_show: function ( event, data )
 	{
-		$('#bt_worklog_div').empty();
-		var div = $('#bt_worklog_div');
+		$('#wdb_worklog_div').empty();
+		var div = $('#wdb_worklog_div');
 		if (!data.worklog || data.worklog.length == 0)
 			div.html('No worklog records');
 		else
@@ -316,10 +317,10 @@ var bt = // setup the bt namespace
 			var wl = data.worklog;
 			for (var x=0; x<wl.length; ++x)
 			{
-			    var uname = bt.group_data.users[wl[x].user_nm] ? bt.group_data.users[wl[x].user_nm].name : 'n/a';
+			    var uname = wdb.group_data.users[wl[x].user_nm] ? wdb.group_data.users[wl[x].user_nm].name : 'n/a';
 				var tr = $('<tr><th>Date/Time: '+wl[x].edtm+' by '+uname+'</th></tr>');
 				div.append(tr);
-				tr = $('<tr><td>'+bt.nl2br(wl[x].comments)+'<hr></td></tr>');
+				tr = $('<tr><td>'+wdb.nl2br(wl[x].comments)+'<hr></td></tr>');
 				div.append(tr);
 			}
 		}
@@ -334,14 +335,14 @@ var bt = // setup the bt namespace
 
 	bughelp: function ( event )
 	{
-		bt.showDialogDiv('BugTrack Help','bughelp_div');
+		wdb.showDialogDiv('BugTrack Help','bughelp_div');
 		return false;
 	},
 
 	bughandler: function( event )
 	{
 		//alert('bughandler '+$('#bugedit_form1').serialize()); return false;
-		var err = bt.validate();
+		var err = wdb.validate();
 		if (err != '')
 		{
 			$('#bugedit_errors').html('Errors encountered:<br>'+err);
@@ -367,14 +368,14 @@ var bt = // setup the bt namespace
 			}
 			else
 			{
-				bt.buglist(event);
+				wdb.buglist(event);
 				if ($('#bid').val() == '') {
-				    bt.bug_save_cancel(event);
+				    wdb.bug_save_cancel(event);
 				    var arr = response.split(/ ,/);
-				    bt.bugshow(event,arr[1]);
+				    wdb.bugshow(event,arr[1]);
 				}
-				else bt.bugshow(event,$('#bid').val());
-				//$('#bt_bugs_list_edit').dialog('close');
+				else wdb.bugshow(event,$('#bid').val());
+				//$('#wdb_bugs_list_edit').dialog('close');
 				//window.setTimeout(function(e) {$('#bugedit_div').dialog('close');},3000);
 			}
 		});
@@ -395,8 +396,8 @@ var bt = // setup the bt namespace
 		{
 			if (/^SUCCESS/.test(response))
 			{
-				$('#bt_bugs_show_edit').dialog('close');
-				bt.buglist(event);
+				$('#wdb_bugs_show_edit').dialog('close');
+				wdb.buglist(event);
 			}
 			else
 				alert(response);
@@ -407,15 +408,15 @@ var bt = // setup the bt namespace
 	assign_search: function ( event )
 	{
 		//alert('assign_search');
-		bt.showDialogDiv('BugTrack Assign','bt_users_search', 700);
+		wdb.showDialogDiv('BugTrack Assign','wdb_users_search', 700);
 		return false;
 	},
 
 	handle_search: function ( event )
 	{
-		$('#bt_user_assign_tbl tbody').off( 'click', 'button');
-		var f = document.bt_form9;
-		var table = $('#bt_user_assign_tbl').DataTable({
+		$('#wdb_user_assign_tbl tbody').off( 'click', 'button');
+		var f = document.wdb_form9;
+		var table = $('#wdb_user_assign_tbl').DataTable({
 			'ajax': {
 				'url': 'admin_users',
 				'type': 'get',
@@ -441,10 +442,10 @@ var bt = // setup the bt namespace
 				'defaultContent': '<button>Select</button>'
 			} ]
 		});
-		$('#bt_user_assign_tbl tbody').on( 'click', 'button', function () {
+		$('#wdb_user_assign_tbl tbody').on( 'click', 'button', function () {
 			var data = table.row( $(this).parents('tr') ).data();
 			//alert( 'user='+data[0]);
-			bt.assign_user(event,data.uid);
+			wdb.assign_user(event,data.uid);
 		} );
 		return false;
 	},
@@ -462,29 +463,29 @@ var bt = // setup the bt namespace
 			dataType: 'html'
 		}).done(function (response)
 		{
-			$('#bt_users_search').dialog('close');
-			bt.bugshow(event,id);
+			$('#wdb_users_search').dialog('close');
+			wdb.bugshow(event,id);
 		});
 		return false;
 	},
 
 	add_worklog: function ( event ) {
-		bt.showDialogDiv('BugTrack Worklog','bt_worklog_form');
-		$('#bt_wl_bug_id').html($('#bug_id2_v').text());
-		$('#bt_wl_descr').html($('#descr_v').html());
-		$('#bt_bug_comments').html($('#comments_v').html());
+		wdb.showDialogDiv('BugTrack Worklog','wdb_worklog_form');
+		$('#wdb_wl_bug_id').html($('#bug_id2_v').text());
+		$('#wdb_wl_descr').html($('#descr_v').html());
+		$('#wdb_bug_comments').html($('#comments_v').html());
 		$('input[name="wl_public"][value="n"]').prop('checked',true);
 		$('textarea[name="wl_comments"]').val('');
-		$('#bt_wl_ename').html($('#usernm').html());
-		$('#bt_wl_entry_dtm').html($('#edtm_v').html());
+		$('#wdb_wl_ename').html($('#usernm').html());
+		$('#wdb_wl_entry_dtm').html($('#edtm_v').html());
 		$('#wl_errors').html('');
 		$('textarea[name="wl_comments"]').focus();
 		return true;
 	},
 
 	workloghandler: function( event ) {
-		//alert('workloghandler '+$('#bt_form2').serialize()); return false;
-		//var err = bt.validate();
+		//alert('workloghandler '+$('#wdb_form2').serialize()); return false;
+		//var err = wdb.validate();
 		var err = '';
 		if ($('textarea[name="wl_comments"]').val().blank())
 			err += ' - Worklog Comments must not be blank<br>';
@@ -494,7 +495,7 @@ var bt = // setup the bt namespace
 			return false;
 		}
 		var id = $('#bid').val();
-		var params = 'action=worklog_add&'+$('#bt_form2').serialize();
+		var params = 'action=worklog_add&'+$('#wdb_form2').serialize();
 		params += '&usernm='+$('#userid').val();
 		params += '&id='+id;
 		params += '&bug_id='+$('#bug_id').val();
@@ -508,9 +509,9 @@ var bt = // setup the bt namespace
 		{
 			if (/^SUCCESS/.test(response))
 			{
-				$('#bt_worklog_form').dialog('close');
-				bt.bugshow(event,$('#bid').val());
-				//window.setTimeout(function(){bt.bugshow(event,id);},200);
+				$('#wdb_worklog_form').dialog('close');
+				wdb.bugshow(event,$('#bid').val());
+				//window.setTimeout(function(){wdb.bugshow(event,id);},200);
 			}
 			else
 				$('#wl_errors').html(response);
@@ -529,7 +530,7 @@ var bt = // setup the bt namespace
 	{
 		$('#filesDiv').empty();
         var out = '';
-        var data = typeof(bt.bug_doc.attachments) == 'object' ? bt.bug_doc.attachments : [];
+        var data = typeof(wdb.bug_doc.attachments) == 'object' ? wdb.bug_doc.attachments : [];
         if (data.length == 0)
             out = 'No attachments';
         else
@@ -537,7 +538,7 @@ var bt = // setup the bt namespace
             $.each(data,function (i)
             {
                 var id = $('#bid').val();
-                out += '<a href="src/get_file.html?id='+id+'&idx='+i+'" target="_blank">'+data[i].file_name+'</a> ('+data[i].file_size+') <span onclick="return bt.remove_file(\''+id+'\','+i+');" style="cursor: pointer;">Remove</span><br>';
+                out += '<a href="src/get_file.html?id='+id+'&idx='+i+'" target="_blank">'+data[i].file_name+'</a> ('+data[i].file_size+') <span onclick="return wdb.remove_file(\''+id+'\','+i+');" style="cursor: pointer;">Remove</span><br>';
             });
         }
         $('#filesDiv').html(out);
@@ -551,7 +552,7 @@ var bt = // setup the bt namespace
 //		w = window.open('views/add_file.html?id='+$('#bid').val()+'&bug_id='+$('#bug_id').val(), 'Add_file', 'width=620,height=280,resizable,menubar,scrollbars');
 		w = window.open('src/add_file.html?id='+$('#bid').val()+'&bug_id='+$('#bug_id').val(), 'Add_file', 'width=620,height=280,resizable,menubar,scrollbars');
 		//setTimeout("watch_add(w)",2000);
-		bt.get_files(event);
+		wdb.get_files(event);
 		return false;
 	},
 
@@ -569,13 +570,13 @@ var bt = // setup the bt namespace
 		}).done(function (response)
 		{
 			console.log(response);
-    		bt.get_files(null);
+    		wdb.get_files(null);
 		});
 		return false;
 	},
 
 	show_email: function ( event ) {
-		bt.showDialogDiv('BugTrack Email','bt_email_div');
+		wdb.showDialogDiv('BugTrack Email','wdb_email_div');
 		$('#bug_id_email').html($('#bug_id2_v').text());
 		$('#descr_email').html($('#descr_v').html());
 		$('input[name="subject"]').val($('#bug_id2_v').text()+' - '+$('#descr_v').html());
@@ -614,7 +615,7 @@ var bt = // setup the bt namespace
 	{
 		var datere = /^[01][0-9]\/[0-3][0-9]\/(19|20)[0-9]{2}$/;
 		var err = '';
-		var f = document.bt_form1;
+		var f = document.wdb_form1;
 		if (f.descr.value.blank())
 			err += ' - Description must not be blank<br>';
 		if (f.product.value.blank())
@@ -630,7 +631,7 @@ var bt = // setup the bt namespace
 
 	bugadmin: function ( event )
 	{
-	    var codes = ["bt_type","bt_group","bt_status","bt_priority","bt_users"];
+	    var codes = ["wdb_type","wdb_group","wdb_status","wdb_priority","wdb_users"];
 	    var descrs = ["Type","Group","Status","Priority","Users"];
 		var obj = $('<select></select>');
 		var opt = $('<option></option>').attr('value','').html('--Select One--');
@@ -640,31 +641,31 @@ var bt = // setup the bt namespace
 			var opt = $('<option></option>').attr('value',codes[i]).html(descrs[i]);
 			obj.append(opt);
 		}
-		$('#bt_admin_types').empty().append(obj);
-		bt.showDialogDiv('BugTrack Admin','bt_admin',700);
-		$('#bt_admin_lu_add').on('click',bt.bugadmin_lu_add);
-		$('#bt_admin_users_add').on('click',bt.user_add);
-		$('#bt_admin_types select').on('change',bt.bugadmin_lu);
-		//bt.bugadmin_users();
+		$('#wdb_admin_types').empty().append(obj);
+		wdb.showDialogDiv('BugTrack Admin','wdb_admin',700);
+		$('#wdb_admin_lu_add').on('click',wdb.bugadmin_lu_add);
+		$('#wdb_admin_users_add').on('click',wdb.user_add);
+		$('#wdb_admin_types select').on('change',wdb.bugadmin_lu);
+		//wdb.bugadmin_users();
 		$('.bugadmin').hide();
-		$('#bt_admin_head').show();
+		$('#wdb_admin_head').show();
 		return false;
 	},
 	
 	bugadmin_lu: function ( event )
 	{
 		$('.bugadmin').hide();
-		var type = $('#bt_admin_types select').val();
+		var type = $('#wdb_admin_types select').val();
 		switch (type)
 		{
-		    case 'bt_type':
-		    case 'bt_group':
-		    case 'bt_status':
-		    case 'bt_priority':
-        		bt.bugadmin_lu_list(type);
+		    case 'wdb_type':
+		    case 'wdb_group':
+		    case 'wdb_status':
+		    case 'wdb_priority':
+        		wdb.bugadmin_lu_list(type);
         	    break;
-		    case 'bt_users':
-        		bt.bugadmin_users();
+		    case 'wdb_users':
+        		wdb.bugadmin_users();
         	    break;
         	default:
         	    alert('ERROR: Unknown type ('+type+')');
@@ -673,7 +674,7 @@ var bt = // setup the bt namespace
 
 	bugadmin_lu_list: function ( type )
 	{
-		$('#bt_lu_tbl tbody').off( 'click', 'button');
+		$('#wdb_lu_tbl tbody').off( 'click', 'button');
 		$.ajax({
 			url: 'admin_lu_list',
 			type: 'get',
@@ -681,7 +682,7 @@ var bt = // setup the bt namespace
 			data: 'action=admin_lu_get&type='+type
 		}).done(function (data)
 		{
-            var table = $('#bt_lu_tbl').DataTable({
+            var table = $('#wdb_lu_tbl').DataTable({
                 'data': data.data,
                 'destroy': true,
                 'order': [[ 0, "asc" ]],
@@ -697,30 +698,30 @@ var bt = // setup the bt namespace
                     'defaultContent': '<button>Edit</button>'
                 } ]
             });
-            $('#bt_lu_tbl tbody').on( 'click', 'button', function () {
+            $('#wdb_lu_tbl tbody').on( 'click', 'button', function () {
                 var data = table.row( $(this).parents('tr') ).data();
                 //alert( 'user='+data[0]);
                 //console.log(data);
-                bt.bugadmin_lu_show(event,type,data.cd);
+                wdb.bugadmin_lu_show(event,type,data.cd);
             } );
 		});
-		$('#bt_lu_list').show();
-		$('#bt_lu_form').hide();
+		$('#wdb_lu_list').show();
+		$('#wdb_lu_form').hide();
 		return false;
 	},
 
 	bugadmin_lu_add: function ( event )
 	{
-		//bt.showDialogDiv('Lookup Add','bugadmin_lu_add');
-		$('#bt_lu_errors').html('');
-		$('#bt_users_form input[type="text"]').val('');
+		//wdb.showDialogDiv('Lookup Add','bugadmin_lu_add');
+		$('#wdb_lu_errors').html('');
+		$('#wdb_users_form input[type="text"]').val('');
 		$('input[name="cd"]').removeAttr('readonly');
 		$('input[name="active"]').removeAttr('checked');
 		$('input[name="active"][value="y"]').prop('checked',true);
-        $('input[name="lu_type"]').val($('#bt_admin_types select').val());
+        $('input[name="lu_type"]').val($('#wdb_admin_types select').val());
         $('input[name="lu_action"]').val('add');
-		$('#bt_lu_list').hide();
-		$('#bt_lu_form').show();
+		$('#wdb_lu_list').hide();
+		$('#wdb_lu_form').show();
 	},
 
 	bugadmin_lu_show: function ( event, type, cd )
@@ -745,7 +746,7 @@ var bt = // setup the bt namespace
                     break;
                 }
             }
-			$('#bt_lu_errors').html('');
+			$('#wdb_lu_errors').html('');
 			$('input[name="cd"]').val(cd);
 			$('input[name="cd"]').attr('readonly',true);
 			$('input[name="descr"]').val(rec.descr);
@@ -755,31 +756,31 @@ var bt = // setup the bt namespace
 			$('input[name="lu_type"]').val(type);
 			$('input[name="lu_action"]').val('change');
 		});
-		$('#bt_lu_list').hide();
-		$('#bt_lu_form').show();
+		$('#wdb_lu_list').hide();
+		$('#wdb_lu_form').show();
 		return false;
 	},
 
 	luhandler: function( event ) {
-		//alert('luhandler '+$('#bt_lu_form_id').serialize());
-// 		var err = bt.validate();
-		var f = document.bt_lu_form;
+		//alert('luhandler '+$('#wdb_lu_form_id').serialize());
+// 		var err = wdb.validate();
+		var f = document.wdb_lu_form;
 		var err = '';
 		if (f.cd.value.blank())
 			err += " - Code must not be blank<br>";
-		//console.log(f.lu_action.value,f.lu_type.value,f.cd.value.trim(),bt.get_lookup(bt.group_data[f.lu_type.value],f.cd.value.trim())); return false;
+		//console.log(f.lu_action.value,f.lu_type.value,f.cd.value.trim(),wdb.get_lookup(wdb.group_data[f.lu_type.value],f.cd.value.trim())); return false;
 		if (f.lu_action.value == 'add'
-		  && bt.get_lookup(bt.group_data[f.lu_type.value],f.cd.value.trim()) != 'n/a')
+		  && wdb.get_lookup(wdb.group_data[f.lu_type.value],f.cd.value.trim()) != 'n/a')
 			err += " - Code is already used<br>";
 		if (f.descr.value.blank())
 			err += " - Description must not be blank<br>";
 		if (err != '')
 		{
-			$('#bt_lu_errors').html('Errors encountered:<br>'+err);
+			$('#wdb_lu_errors').html('Errors encountered:<br>'+err);
 			return false;
 		}
 		var params = 'action=lu_add_update';
-		params += '&'+$('#bt_lu_form_id').serialize();
+		params += '&'+$('#wdb_lu_form_id').serialize();
 		//alert('userhandler '+params); return false;
 		$.ajax({
 			url: 'lu_add_update',
@@ -788,30 +789,30 @@ var bt = // setup the bt namespace
 			dataType: 'html'
 		}).done(function (response)
 		{
-			$('#bt_lu_errors').html(response);
-			bt.reload_lookups();
-			bt.bugadmin_lu_list(f.lu_type.value);
+			$('#wdb_lu_errors').html(response);
+			wdb.reload_lookups();
+			wdb.bugadmin_lu_list(f.lu_type.value);
 		});
 		return false;
 	},
 
 	lu_save_cancel: function( event )
 	{
-		$('#bt_lu_list').show();
-		$('#bt_lu_form').hide();
+		$('#wdb_lu_list').show();
+		$('#wdb_lu_form').hide();
 		return false;
 	},
 
 	bugadmin_users: function ( event )
 	{
-		$('#bt_user_tbl tbody').off( 'click', 'button');
+		$('#wdb_user_tbl tbody').off( 'click', 'button');
 		$.ajax({
 			url: 'admin_users',
 			type: 'get',
 			dataType: 'json'
 		}).done(function (data)
 		{
-            var table = $('#bt_user_tbl').DataTable({
+            var table = $('#wdb_user_tbl').DataTable({
                 'data': data.data,
                 'destroy': true,
                 'order': [[ 0, "asc" ]],
@@ -829,23 +830,23 @@ var bt = // setup the bt namespace
                     'defaultContent': '<button>Edit</button>'
                 } ]
             });
-            $('#bt_user_tbl tbody').on( 'click', 'button', function () {
+            $('#wdb_user_tbl tbody').on( 'click', 'button', function () {
                 var data = table.row( $(this).parents('tr') ).data();
                 //alert( 'user='+data[0]);
                 //console.log(data);
-                bt.user_show(event,data.uid);
+                wdb.user_show(event,data.uid);
             } );
 		});
-		$('#bt_users_list').show();
-		$('#bt_users_form').hide();
+		$('#wdb_users_list').show();
+		$('#wdb_users_form').hide();
 		return false;
 	},
 
 	user_add: function ( event )
 	{
-		//bt.showDialogDiv('User Add','bt_users_form');
-		$('#bt_admin_errors').html('');
-		$('#bt_users_form input[type="text"]').val('');
+		//wdb.showDialogDiv('User Add','wdb_users_form');
+		$('#wdb_admin_errors').html('');
+		$('#wdb_users_form input[type="text"]').val('');
 		$('input[name="pw"]').val('');
 		$('input[name="pw2"]').val('');
 		$('input[name="uid1"]').val('');
@@ -856,15 +857,15 @@ var bt = // setup the bt namespace
 		$('input[name="active"][value="y"]').prop('checked',true);
 		$('input[name="roles"]').removeAttr('checked');
 		$('input[name="roles"][value="user"]').prop('checked',true);
-		$('select[name="bt_group"]').val('');
-		$('#bt_users_list').hide();
-		$('#bt_users_form').show();
+		$('select[name="wdb_group"]').val('');
+		$('#wdb_users_list').hide();
+		$('#wdb_users_form').show();
 	},
 
 	user_show: function ( event, uid )
 	{
 		uid2 = !uid ? '' : uid;
-		var params = "action=bt_user_show";
+		var params = "action=wdb_user_show";
 		params += '&uid='+uid2;
 		$.ajax({
 			url: 'user_get',
@@ -874,9 +875,9 @@ var bt = // setup the bt namespace
 		}).done(function (data)
 		{
 			//console.log(data);
-			//bt.showDialogDiv('User Edit','bt_users_form');
-			//$('#bt_user_form_id').on('submit',bt.userhandler);
-			$('#bt_admin_errors').html('');
+			//wdb.showDialogDiv('User Edit','wdb_users_form');
+			//$('#wdb_user_form_id').on('submit',wdb.userhandler);
+			$('#wdb_admin_errors').html('');
 			$('input[name="uid"]').val(uid);
 			$('input[name="id"]').val(data._id);
 			$('input[name="uid1"]').val(uid);
@@ -893,25 +894,25 @@ var bt = // setup the bt namespace
 			else $('input[name="roles"][value="user"]').prop('checked',true);
 			$('input[name="pw"]').val(data.pw);
 			$('input[name="pw2"]').val(data.pw);
-			$('select[name="bt_group"]').val(data.bt_group);
+			$('select[name="wdb_group"]').val(data.wdb_group);
 		});
-		$('#bt_users_list').hide();
-		$('#bt_users_form').show();
+		$('#wdb_users_list').hide();
+		$('#wdb_users_form').show();
 		return false;
 	},
 
 	user_save_cancel: function( event )
 	{
-		$('#bt_users_list').show();
-		$('#bt_users_form').hide();
+		$('#wdb_users_list').show();
+		$('#wdb_users_form').hide();
 		return false;
 	},
 
 	userhandler: function( event ) {
-		//alert('userhandler '+$('#bt_user_form_id').serialize());
+		//alert('userhandler '+$('#wdb_user_form_id').serialize());
 		var emailre = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,6})+$/;
-// 		var err = bt.validate();
-		var f = document.bt_user_form;
+// 		var err = wdb.validate();
+		var f = document.wdb_user_form;
 		var err = '';
 		if (f.uid1.value.blank())
 			err += " - UID must not be blank<br>";
@@ -919,15 +920,15 @@ var bt = // setup the bt namespace
 			err += " - Last Name must not be blank<br>";
 		if (!emailre.test(f.email.value))
 			err += ' - Email is not valid<br>';
-		if (f.bt_group.value.blank())
+		if (f.wdb_group.value.blank())
 			err += " - Group must be selected<br>";
 		if (err != '')
 		{
-			$('#bt_admin_errors').html('Errors encountered:<br>'+err);
+			$('#wdb_admin_errors').html('Errors encountered:<br>'+err);
 			return false;
 		}
 		var params = 'action=user_add_update';
-		params += '&'+$('#bt_user_form_id').serialize();
+		params += '&'+$('#wdb_user_form_id').serialize();
 		//alert('userhandler '+params); return false;
 		$.ajax({
 			url: 'user_add_update',
@@ -936,8 +937,8 @@ var bt = // setup the bt namespace
 			dataType: 'html'
 		}).done(function (response)
 		{
-			$('#bt_admin_errors').html(response);
-			bt.bugadmin_users(event);
+			$('#wdb_admin_errors').html(response);
+			wdb.bugadmin_users(event);
 		});
 		return false;
 	},
@@ -948,7 +949,7 @@ var bt = // setup the bt namespace
 			file,
 			function (response)
 			{
-				bt.showDialog('BugTrack Maintenance',response);
+				wdb.showDialog('BugTrack Maintenance',response);
 			}
 		);
 		return false;
@@ -994,19 +995,19 @@ var bt = // setup the bt namespace
 	bugCancelDialog: function ( event )
 	{
 		if ($('#bugedit_id').text() == '')
-			$('#bt_bugs_show_edit').dialog('close');
+			$('#wdb_bugs_show_edit').dialog('close');
 		else
 		{
 			$('#bugshow_div').show();
 			$('#bugedit_div').hide();
 		}
-		bt.buglist();
+		wdb.buglist();
 	},
 
 	worklogCancelDialog: function ( event )
 	{
-		$('#bt_worklog_form').dialog('close');
-		bt.buglist();
+		$('#wdb_worklog_form').dialog('close');
+		wdb.buglist();
 	},
 
 	nl2br: function ( val )
@@ -1039,16 +1040,16 @@ var bt = // setup the bt namespace
 	
 	reload_lookups: function ( )
 	{
-		var params = 'action=bt_init';
+		var params = 'action=wdb_init';
 		$.ajax({
-			url: 'bt_init',
+			url: 'wdb_init',
 			type: 'get',
 			data: params,
 			dataType: 'json'
 		}).done(function (data)
 		{
 			//console.log(data);
-			bt.group_data = data;
+			wdb.group_data = data;
 		});
 	},
 
@@ -1069,51 +1070,51 @@ var bt = // setup the bt namespace
 
 	init: function ( )
 	{
-		$('#bt_refresh_btn').button();
-		$('#bt_refresh_btn').on('click',bt.buglist);
-		$('#bt_add_btn').button();
-		$('#bt_add_btn').on('click',bt.bugadd);
-		$('#bt_admin_btn').button();
-		$('#bt_admin_btn').on('click',bt.bugadmin);
-		$('#bt_help_btn').button();
-		$('#bt_help_btn').on('click',bt.bughelp);
-		$('#bugedit_form1').on('submit',bt.bughandler);
-		$('#bt_form2').on('submit',bt.workloghandler);
-		$('#bt_form9').on('submit',bt.handle_search);
-		$('#bug_email_form').on('submit',bt.email_bug);
-		$('#cancel2').on('click',bt.worklogCancelDialog);
-		$('#bt_bug_edit_cancel').on('click',bt.bugCancelDialog);
-		$('#bt_lu_form_id').on('submit',bt.luhandler);
-		$('#bt_lu_save_cancel').on('click',bt.lu_save_cancel);
-		$('#bt_user_form_id').on('submit',bt.userhandler);
-		$('#bt_user_save_cancel').on('click',bt.user_save_cancel);
-		$('#bt_show_buttons span').button();
-		$('#bt_admin_btn').show();
-		var params = 'action=bt_init';
+		$('#wdb_refresh_btn').button();
+		$('#wdb_refresh_btn').on('click',wdb.buglist);
+		$('#wdb_add_btn').button();
+		$('#wdb_add_btn').on('click',wdb.bugadd);
+		$('#wdb_admin_btn').button();
+		$('#wdb_admin_btn').on('click',wdb.bugadmin);
+		$('#wdb_help_btn').button();
+		$('#wdb_help_btn').on('click',wdb.bughelp);
+		$('#bugedit_form1').on('submit',wdb.bughandler);
+		$('#wdb_form2').on('submit',wdb.workloghandler);
+		$('#wdb_form9').on('submit',wdb.handle_search);
+		$('#bug_email_form').on('submit',wdb.email_bug);
+		$('#cancel2').on('click',wdb.worklogCancelDialog);
+		$('#wdb_bug_edit_cancel').on('click',wdb.bugCancelDialog);
+		$('#wdb_lu_form_id').on('submit',wdb.luhandler);
+		$('#wdb_lu_save_cancel').on('click',wdb.lu_save_cancel);
+		$('#wdb_user_form_id').on('submit',wdb.userhandler);
+		$('#wdb_user_save_cancel').on('click',wdb.user_save_cancel);
+		$('#wdb_show_buttons span').button();
+		$('#wdb_admin_btn').show();
+		var params = 'action=wdb_init';
 		$.ajax({
-			url: 'bt_init',
+			url: 'wdb_init',
 			type: 'get',
 			data: params,
 			dataType: 'json'
 		}).done(function (data)
 		{
 			//console.log(data);
-			bt.group_data = data;
-			var sel = bt.build_selection('bt_group',data.bt_group);
-			$('#bt_groups').empty().append(sel);
-			var sel = bt.build_selection('bt_group',data.bt_group);
-			$('#bt_grp').empty().append(sel);
-			var sel = bt.build_selection('bug_type',data.bt_type);
+			wdb.group_data = data;
+			var sel = wdb.build_selection('wdb_group',data.wdb_group);
+			$('#wdb_groups').empty().append(sel);
+			var sel = wdb.build_selection('wdb_group',data.wdb_group);
+			$('#wdb_grp').empty().append(sel);
+			var sel = wdb.build_selection('bug_type',data.wdb_type);
 			$('#btypes_s').empty().append(sel);
-			var sel = bt.build_selection('status',data.bt_status);
+			var sel = wdb.build_selection('status',data.wdb_status);
 			$('#status_s').empty().append(sel);
-			var sel = bt.build_selection('priority',data.bt_priority);
+			var sel = wdb.build_selection('priority',data.wdb_priority);
 			$('#priority_s').empty().append(sel);
-			var sel = bt.build_selection('bug_type2',data.bt_type);
+			var sel = wdb.build_selection('bug_type2',data.wdb_type);
 			$('#btc_types').empty().append(sel);
-			var sel = bt.build_selection('status2',data.bt_status);
+			var sel = wdb.build_selection('status2',data.wdb_status);
 			$('#btc_status').empty().append(sel);
-			if (!/admin/.test(bt.group_data.roles)) $('#bt_admin_btn').hide();
+			if (!/admin/.test(wdb.group_data.roles)) $('#wdb_admin_btn').hide();
 		});
 	}
 
@@ -1122,10 +1123,10 @@ var bt = // setup the bt namespace
 $(function ()
 {
 	$( document ).ajaxError(function(event, jqxhr, settings, thrownError) {
-		bt.showDialog( "ERROR!", "A error occurred during server call.<br>" + thrownError );
+		wdb.showDialog( "ERROR!", "A error occurred during server call.<br>" + thrownError );
 	});
-	bt.init();
+	wdb.init();
 	//login_content = $('#login_content').html();
 	//$('#login_content').html('');
-	//bt.check_session();
+	//wdb.check_session();
 });

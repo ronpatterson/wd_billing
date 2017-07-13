@@ -23,8 +23,8 @@
 			</table><br>
 			<input type="hidden" name="usernm" value="Patterson, Ron" id="usernm" />
 			<input type="hidden" name="userid" value="rlpatter" id="userid" />
-			<input type="hidden" name="bid" id="bid" value="">
-			<input type="hidden" name="bug_id" id="bug_id" value="">
+			<input type="hidden" name="pid" id="pid" value="">
+			<input type="hidden" name="proj_cd" id="proj_cd" value="">
 		</div>
 		
 		<div id="wdb_menu">
@@ -46,11 +46,33 @@
 				<table id="wdb_tbl" class="display" border="1" cellspacing="0" cellpadding="3" width="100%">
 					<thead>
 					<tr>
-					<th>ID</th><th>Description</th><th>Date entered</th><th>Status</th><th>&nbsp;</th>
+					<th>ID</th><th>Name</th><th>Client</th><th>Date entered</th><th>Status</th><th>&nbsp;</th>
 					</tr>
 					</thead>
 				</table>
 				</div>
+			</div>
+
+			<div id="wdb_contacts_list" style="display: none;">
+				<p>Click on Show to see details. Click column title to sort.</p>
+				<table id="wdb_tbl" class="display" border="1" cellspacing="0" cellpadding="3" width="100%">
+					<thead>
+					<tr>
+					<th>Last Name</th><th>First Name</th><th>Email Address</th><th>Cell Phone</th><th>Active</th><th>&nbsp;</th>
+					</tr>
+					</thead>
+				</table>
+			</div>
+
+			<div id="wdb_clients_list" style="display: none;">
+				<p>Click on Show to see details. Click column title to sort.</p>
+				<table id="wdb_tbl" class="display" border="1" cellspacing="0" cellpadding="3" width="100%">
+					<thead>
+					<tr>
+					<th>Client Name</th><th>Contact Name</th><th>Active</th><th>&nbsp;</th>
+					</tr>
+					</thead>
+				</table>
 			</div>
 
 			<div id="wdb_users_search" style="display: none;">
@@ -95,27 +117,27 @@
 						<div class="fields2"><span id="name_v"></span></div><br class="clear">
 						<label>PO Number:</label>
 						<div class="fields2"><span id="po_nbr_v"></span></div><br class="clear">
+						<label>Priority:</label>
+						<div class="fields2"><span id="priority_v"></span></div><br class="clear">
 						<label>Status:</label>
 						<div class="fields2"><span id="status_v"></span></div><br class="clear">
 						<label>Hourly Rate:</label>
 						<div class="fields2"><span id="hourly_rate_v"></span></div><br class="clear">
-						<label>Priority:</label>
-						<div class="fields2"><span id="priority_v"></span></div><br class="clear">
-						<label>Comments:</label>
-						<div class="fields2"><span id="comments_v"></span></div><br class="clear">
-						<label>Solution:</label>
-						<div class="fields2"><span id="solution_v"></span></div><br class="clear">
+						<label>Mileage Rate:</label>
+						<div class="fields2"><span id="mileage_rate_v"></span></div><br class="clear">
+						<label>Distance:</label>
+						<div class="fields2"><span id="distance_v"></span></div><br class="clear">
 						<label>Attachments:</label>
 						<div class="fields2"><div id="filesDiv"></div> <input type="button" id="wdb_assign_btn1" value="Attach File" onclick="return bt.attach_file();"></div><br class="clear">
-						<label>Entry By:</label>
-						<div class="fields2"><span id="ename_v"></span></div><br class="clear">
-						<label>Assigned To:</label>
-						<div class="fields2"><div id="assignedDiv1"><a href="mailto:"><span id="edit_v"></span></a></div> <input type="button" id="wdb_assign_btn1" value="Assign" onclick="return bt.assign_search();"></div><br class="clear">
+						<label>Links:</label>
+						<div class="fields2"><div id="linksDiv"></div> <input type="button" id="wdb_links_btn1" value="Add Link" onclick="return bt.add_link();"></div><br class="clear">
 						<label>Entry Date/Time:</label>
 						<div class="fields2"><span id="edtm_v"></span></div><br class="clear">
-						<label>Update Date/Time:</label>
-						<div class="fields2"><span id="udtm_v"></span></div><br class="clear">
-						<label>Closed Date/Time:</label>
+						<label>Due Date/Time:</label>
+						<div class="fields2"><span id="ddtm_v"></span></div><br class="clear">
+						<label>Started Date/Time:</label>
+						<div class="fields2"><span id="sdtm_v"></span></div><br class="clear">
+						<label>Completed Date/Time:</label>
 						<div class="fields2"><span id="cdtm_v"></span></div><br class="clear">
 					</fieldset>
 					<br>
@@ -123,7 +145,7 @@
 						<span onclick="return wdb.edit_project(event);">Edit Project</span>
 						<span onclick="return wdb.delete_project(event);">Delete Project</span>
 						<span onclick="return wdb.show_email(event);">Email Project</span>
-						<span onclick="return wdb.add_worklog(event);">Add Worklog</span>
+						<span onclick="return wdb.add_proj_notes(event);">Add Notes</span>
 					</div>
 					<br>
 					<fieldset>
@@ -139,29 +161,29 @@
 						<legend> WD Billing Record </legend>
 						<label>ID:</label>
 						<div class="fields2"><span id="bugedit_id"></span></div><br class="clear">
-						<label for="group"><span class="required">*</span>Group:</label>
-						<div class="fields2"><span id="wdb_grp"></span></div><br class="clear">
-						<label for="descr"><span class="required">*</span>Description:</label>
-						<div class="fields2"><input type="text" name="descr" size="40" value=""></div><br class="clear">
-						<label for="product"><span class="required">*</span>Product or Application:</label>
-						<div class="fields2"><input type="text" name="product" size="40" value=""></div><br class="clear">
-						<label for="bug_type"><span class="required">*</span>Bug Type:</label>
-						<div class="fields2"><span id="btypes_s"></span></div><br class="clear">
-						<label for="status">Status:</label>
-						<div class="fields2"><span id="status_s"></span></div><br class="clear">
+						<label for="group"><span class="required">*</span>Client:</label>
+						<div class="fields2"><span id="wdb_client"></span></div><br class="clear">
+						<label for="name"><span class="required">*</span>Name:</label>
+						<div class="fields2"><input type="text" name="name" size="40" value=""></div><br class="clear">
+						<label for="po_nbr"><span class="required">*</span>PO Number:</label>
+						<div class="fields2"><input type="text" name="po_nbr" size="20" value=""></div><br class="clear">
 						<label for="priority"><span class="required">*</span>Priority:</label>
 						<div class="fields2"><span id="priority_s"></span></div><br class="clear">
-						<label for="comments"><span class="required">*</span>Comments:</label>
-						<div class="fields2"><textarea name="comments" rows="4" cols="40" wrap="virtual"></textarea></div><br class="clear">
-						<label for="solution">Solution:</label>
-						<div class="fields2"><textarea name="solution" rows="4" cols="40" wrap="virtual"></textarea></div><br class="clear">
-						<label>Assigned To:</label>
-						<div class="fields2"><div id="assignedDiv2"></div><!--<input type="button" id="wdb_assign_btn2" value="Assign" onclick="return bt.assign_search();">--></div><br class="clear">
+						<label for="status">Status:</label>
+						<div class="fields2"><span id="status_s"></span></div><br class="clear">
+						<label for="hourly_rate"><span class="required">*</span>Hourly Rate:</label>
+						<div class="fields2"><input type="text" name="hourly_rate" size="10" value=""></div><br class="clear">
+						<label for="mileage_rate"><span class="required">*</span>Mileage Rate:</label>
+						<div class="fields2"><input type="text" name="mileage_rate" size="10" value=""></div><br class="clear">
+						<label for="distance"><span class="required">*</span>Distance:</label>
+						<div class="fields2"><input type="text" name="distance" size="10" value=""></div><br class="clear">
 						<label>Entry Date/Time:</label>
 						<div class="fields2"><span id="edtm" class="wdb_date"></span></div><br class="clear">
-						<label>Update Date/Time:</label>
-						<div class="fields2"><span id="udtm" class="wdb_date"></span></div><br class="clear">
-						<label>Closed Date/Time:</label>
+						<label>Due Date/Time:</label>
+						<div class="fields2"><span id="ddtm" class="wdb_date"></span></div><br class="clear">
+						<label>Started Date/Time:</label>
+						<div class="fields2"><span id="sdtm" class="wdb_date"></span></div><br class="clear">
+						<label>Completed Date/Time:</label>
 						<div class="fields2"><span id="cdtm" class="wdb_date"></span></div><br class="clear">
 						<label>&nbsp;</label>
 						<div class="fields2"><input type="submit" value="SAVE"> <input
@@ -246,7 +268,7 @@
 					</table>
 				</div>
 
-				<div id="wdb_lu_form" class="projform bugadmin" style="display: none;">
+				<div id="wdb_lu_form" class="projform projadmin" style="display: none;">
 					<fieldset>
 						<legend>Lookup Add/Edit</legend>
 						<form name="wdb_lu_form" id="wdb_lu_form_id">
@@ -308,7 +330,7 @@
 				<p>TBA - Some help info</p>
 			</div>
 			
-			<br><br><div align="center"><address><span style="font-size: 11pt;">Copyright &copy;2016, WildDog Design</span></address></div>
+			<br><br><div align="center"><address><span style="font-size: 11pt;">Copyright &copy;2017, WildDog Design</span></address></div>
 
 		</div>
 
