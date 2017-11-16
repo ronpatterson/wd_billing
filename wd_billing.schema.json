@@ -1,0 +1,259 @@
+/*
+-- WildDog Billing Schema
+-- wd_billing.mongodb.txt
+
+-- MongoDB design version
+
+-- Revision 0.1, 15-Nov-2017
+
+-- Ron Patterson, WildDog Design
+
+-- collections document definitions
+*/
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "counters",
+    "description": "collection of counters",
+    "type": "object",
+    "required": [ "_id", "seq" ],
+    "properties": {
+        "_id" : { "type": "string" }, // wdb_id
+        "seq" : { "type": "integer" }
+    }
+}
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "wdb_lookups",
+    "description": "collection of lookup values",
+    "type": "object",
+    "required": [ "_id", "items" ],
+    "properties": {
+        "_id" : { "type": "string" }, // wdb_type, wdb_category, wdb_status, wdb_priority, ...
+        "items" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "required": [ "cd", "descr", "active" ],
+                "properties": {
+                    "cd" : { "type": "string" },
+                    "descr" : { "type": "string" },
+                    "active" : { "type": "string", "enum": [ "y", "n" ] }
+                }
+            }
+        }
+    }
+}
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "wdb_contacts",
+    "description": "collection of contacts",
+    "type": "object",
+    "required": [ "cname", "address", "phone", "type", "active" ],
+    "properties": {
+        "cname" : { "type": "string" },
+        "lname" : { "type": "string" },
+        "fname" : { "type": "string" },
+        "email" : { "type": "array" },
+        "address" : { 
+            "type" : "object",
+            "properties" : {
+                "number" : { "type": "string" },
+                "street" : { "type": "string" },
+                "city" : { "type": "string" },
+                "state" : { "type": "string" },
+                "zip" : { "type": "string" },
+                "country" : { "type": "string" }
+            }
+        },
+        "phone" : { 
+            "type" : "object",
+            "properties" : {
+                "work" : { "type": "string" },
+                "cell" : { "type": "string" },
+                "fax" : { "type": "string" }
+            }
+        },
+        "type" : { "type": "string", "maxLength": 1 }, // wdb_type
+        "active" : { "type": "string", "enum": [ "y", "n" ] }
+    }
+}
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "wdb_clients",
+    "description": "collection of clients",
+    "type": "object",
+    "required": [ "client_cd", "client_name", "client", "contacts", "active" ],
+    "properties": {
+        "client_cd" : { "type": "string" },
+        "client_name" : { "type": "string" },
+        "client" : { "type": "string" }, // wdb_contacts
+        "contacts" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string" } // wdb_contacts
+        },
+        "hourly_rate" : { "type": "number" },
+        "mileage_rate" : { "type": "number" },
+        "distance" : { "type": "number" },
+        "mileage_rate" : { "type": "number" },
+        "active" : { "type": "string", "enum": [ "y", "n" ] }
+    }
+}
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "wdb_projects",
+    "description": "collection of projects",
+    "type": "object",
+    "required": [ "client_cd", "client_name", "client", "contacts", "active" ],
+    "properties": {
+        "proj_cd" : { "type": "string" }, // client_cd.seq
+        "client_cd" : { "type": "string" }, // wdb_clients
+        "name" : { "type": "string" },
+        "po_nbr" : { "type": "string" },
+        "priority" : { "type": "string" }, // wdb_priority
+        "status" : { "type": "string" }, // wdb_status
+        "hourly_rate" : { "type": "number" },
+        "mileage_rate" : { "type": "number" },
+        "distance" : { "type": "number" },
+        "dates" : {
+            "type": "object",
+            "required": [ "entered" ],
+            "properties": {
+                "entered" : { "type": "string", "format": "date" },
+                "due" : { "type": "string", "format": "date" },
+                "started" : { "type": "string", "format": "date" },
+                "completed" : { "type": "string", "format": "date" }
+            }
+        },
+        "links" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "required": [ "url", "entry_dtm" ],
+                "properties": {
+                    "url" : { "type": "string" },
+                    "entry_dtm" : { "type": "string", "format": "date" }
+                }
+            }
+        },
+        "notes" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "required": [ "user_nm", "comments", "entry_dtm" ],
+                "properties": {
+                    "user_nm" : { "type": "string" },
+                    "comments" : { "type": "string" },
+                    "entry_dtm" : { "type": "string", "format": "date" }
+                }
+            }
+        },
+        "attachments" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "required": [ "user_nm", "comments", "entry_dtm" ],
+                "properties": {
+                    "file_name" : { "type": "string" },
+                    "file_size" : { "type": "integer" },
+                    "file_hash" : { "type": "string" },
+                    "entry_dtm" : { "type": "string", "format": "date" }
+                }
+            }
+        }
+    }
+}
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "wdb_working_slips",
+    "description": "collection of working slips",
+    "type": "object",
+    "required": [ "client_cd", "client_name", "client", "contacts", "active" ],
+    "properties": {
+        "proj_cd" : { "type": "string" }, // wdb_projects
+        "name" : { "type": "string" },
+        "catagory" : { "type": "string" }, // wdb_category
+        "kind" : { "type": "string" }, // wdb_kind
+        "billable" : { "type": "boolean" },
+        "due_date" : { "type": "string", "format": "date" },
+        "duration" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "required": [ "hours", "mins" ],
+                "properties": {
+                    "hours" : { "type": "integer" },
+                    "mins" : { "type": "integer" }
+                }
+            }
+        },
+        "rate" : { "type": "number" },
+        "comments" : { "type": "string" },
+        "log" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "required": [ "start", "end", "comments" ],
+                "properties": {
+                    "start" : { "type": "string", "format": "date-time" },
+                    "end" : { "type": "string", "format": "date-time" },
+                    "comments" : { "type": "string" }
+                }
+            }
+        }
+    }
+}
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "wdb_statements",
+    "description": "collection of statements",
+    "type": "object",
+    "required": [ "proj_cd", "nbr", "slips" ],
+    "properties": {
+        "proj_cd" : { "type": "string" }, // wdb_projects
+        "nbr" : { "type": "string" },
+        "inv_date" : { "type": "string", "format": "date-time" },
+        "due_date" : { "type": "string", "format": "date-time" },
+        "terms" : { "type": "string" },
+        "comments" : { "type": "string" },
+        "slips" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string" } // wdb_working_slips
+        }
+    }
+}
+
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "wdb_users",
+    "description": "collection of users",
+    "type": "object",
+    "required": [ "uid", "lname", "active" ],
+    "properties": {
+        "uid" : { "type": "string" },
+        "lname" : { "type": "string" },
+        "fname" : { "type": "string" },
+        "email" : { "type": "string" },
+        "active" : { "type": "string", "enum": [ "y", "n" ] },
+        "roles" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string" }
+        },
+        "pw" : { "type": "string" }
+    }
+}

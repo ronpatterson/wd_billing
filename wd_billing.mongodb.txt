@@ -50,7 +50,8 @@ db.wdb_contacts {
 
 db.wdb_clients {
     "_id" : ObjectId,
-    "client_id" : string,
+    "client_cd" : string,
+    "client_name" " string,
     "client" : ObjectId, // wdb_contacts
     "contacts" : [ ObjectId,... ], // wdb_contacts
     "hourly_rate" : decimal,
@@ -61,8 +62,8 @@ db.wdb_clients {
 
 db.wdb_projects {
     "_id" : ObjectId,
-    "proj_cd" : string,
-    "client_id" : string, // wdb_clients
+    "proj_cd" : string, // client_cd.seq
+    "client_cd" : string, // wdb_clients
     "name" : string,
     "po_nbr" : string,
     "priority" : char, // wdb_priority

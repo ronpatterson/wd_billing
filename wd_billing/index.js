@@ -17,7 +17,8 @@ const ObjectId = require('mongodb').ObjectID,
 const adir = '/usr/local/data/',
 	smtp_host = 'smtp.postoffice.net',
 	smtp_user = 'ron.patterson%40usa.net',
-	smtp_pw = 'xxxx';
+	smtp_pw = 'xxxx',
+    dateFmt1 = 'mm/dd/yyyy h:MM tt';
 
 var lookups = [];
 
@@ -67,7 +68,7 @@ module.exports = function() {
             cursor.forEach((doc) => {
                 //console.log(doc);
                 //doc.entry_dtm = date("m/d/Y g:i a",doc.entry_dtm.sec);
-                doc.entry_dtm = dateFormat(doc.dates.entered,'mm/dd/yyyy h:MM tt');
+                doc.entry_dtm = dateFormat(doc.dates.entered,dateFmt1);
                 doc.status = getWDBlookup("wdb_status",doc.status);
                 results.push(doc);
             }, (err) => {
@@ -89,13 +90,13 @@ module.exports = function() {
                     proj.status_descr = getWDBlookup("wdb_status",proj.status);
                     proj.priority_descr = getWDBlookup("wdb_priority",proj.priority);
                     //var bt = getWDBlookup("wdb_type",bug.bug_type);
-                    proj.edtm = dateFormat(proj.dates.entered,'mm/dd/yyyy h:MM tt');
-                    proj.ddtm = typeof(proj.dates.due) == 'undefined' ? '' : dateFormat(proj.dates.due,'mm/dd/yyyy h:MM tt');
-                    proj.sdtm = typeof(proj.dates.started) == 'undefined' ? '' : dateFormat(proj.dates.started,'mm/dd/yyyy h:MM tt');
-                    proj.cdtm = typeof(proj.dates.completed) == 'undefined' ? '' : dateFormat(proj.dates.completed,'mm/dd/yyyy h:MM tt');
+                    proj.edtm = dateFormat(proj.dates.entered,dateFmt1);
+                    proj.ddtm = typeof(proj.dates.due) == 'undefined' ? '' : dateFormat(proj.dates.due,dateFmt1);
+                    proj.sdtm = typeof(proj.dates.started) == 'undefined' ? '' : dateFormat(proj.dates.started,dateFmt1);
+                    proj.cdtm = typeof(proj.dates.completed) == 'undefined' ? '' : dateFormat(proj.dates.completed,dateFmt1);
                     if (typeof(proj.attachments) != 'undefined') {
                         for (var i=0; i<proj.attachments.length; ++i) {
-                            proj.attachments[i].edtm = typeof(proj.attachments[i].entry_dtm) == 'undefined' ? '' : dateFormat(proj.attachments[i].entry_dtm,'mm/dd/yyyy h:MM tt');
+                            proj.attachments[i].edtm = typeof(proj.attachments[i].entry_dtm) == 'undefined' ? '' : dateFormat(proj.attachments[i].entry_dtm,dateFmt1);
                         }
                     }
                     //console.log(proj);
@@ -109,7 +110,7 @@ module.exports = function() {
             //console.log(req.body); res.end('TEST'); return;
             if (typeof(req.body['id']) == 'undefined' || req.body.id == '') { // add
                 db.collection('counters').findAndModify (
-                    { "_id": 'bug_id' },
+                    { "_id": 'proj_cd' },
                     [ ],
                     { '$inc': { 'seq': 1 } },
                     {
@@ -120,28 +121,31 @@ module.exports = function() {
                         assert.equal(null, err);
                         console.log(updoc);
                         var id = updoc.value.seq;
-                        var bug_id = req.body.wdb_group + id;
+                        var proj_cd = req.body.wdb_group + id;
                         var iid = new ObjectId();
                         var doc = {
   "_id": iid
-, "bug_id": bug_id
-, "descr": req.body.descr
-, "product": req.body.product
-, "user_nm": req.body.user_id
-, "bug_type": req.body.bug_type.substr(0,1)
-, "status": req.body.status
+, "proj_cd": proj_cd
+, "client_id": req.client_id
+, "name": req.body.name
+, "po_nbr": req.body.po_nbr
 , "priority": req.body.priority
-, "comments": req.body.comments
-, "solution": req.body.solution
-, "entry_dtm": new Date()
+, "status": req.body.status
+, "hourly_rate": req.body.hourly_rate
+, "mileage_rate": req.body.mileage_rate
+, "distance": req.body.distance
+, "dates.entered": new Date(req.body.entered)
+, "dates.due": new Date(req.body.due)
+, "dates.started": new Date(req.body.started)
+, "dates.completed": new Date(req.body.completed)
 };
                         //console.log(doc); res.end('TEST'); return;
-                        db.collection('wdb_bugs')
+                        db.collection('wdb_projects')
                         .insert(
                             doc,
                             (err, result) => {
                                 assert.equal(err, null);
-                                console.log("Inserted a document into the wdb_bugs collection.");
+                                console.log("Inserted a document into the wdb_projects collection.");
                                 //console.log(result);
                                 res.send('SUCCESS '+iid+','+bug_id);
                                 res.end();
@@ -151,29 +155,31 @@ module.exports = function() {
                 )
             }
             else { // update
-                var bid = req.body.bug_id.replace(/.*(\d+)$/,'$1');
-                var bug_id = req.body.wdb_group + bid;
+                var bid = req.body.proj_cd.replace(/.*(\d+)$/,'$1');
+                var proj_cd = req.body.wdb_group + bid;
                 var doc = {
-  "bug_id": bug_id
-, "descr": req.body.descr
-, "product": req.body.product
-, "user_nm": req.body.user_id
-, "bug_type": req.body.bug_type.substr(0,1)
-, "status": req.body.status
+, "proj_cd": proj_cd
+, "client_id": req.client_id
+, "name": req.body.name
+, "po_nbr": req.body.po_nbr
 , "priority": req.body.priority
-, "comments": req.body.comments
-, "solution": req.body.solution
-, "update_dtm": new Date()
+, "status": req.body.status
+, "hourly_rate": req.body.hourly_rate
+, "mileage_rate": req.body.mileage_rate
+, "distance": req.body.distance
+, "dates.due": new Date(req.body.due)
+, "dates.started": new Date(req.body.started)
+, "dates.completed": new Date(req.body.completed)
 };
                 //console.log(doc); res.end('TEST'); return;
                 var id = req.body.id;
-                db.collection('wdb_bugs')
+                db.collection('wdb_projects')
                 .updateOne(
                     { '_id': new ObjectId(id) },
                     { '$set': doc },
                     (err, result) => {
                         assert.equal(err, null);
-                        //console.log("Updated a document in the wdb_bugs collection.");
+                        //console.log("Updated a document in the wdb_projects collection.");
                         //console.log(result);
                         res.send('SUCCESS');
                         res.end();
@@ -185,12 +191,12 @@ module.exports = function() {
         delete_proj: (db, req, res) => {
             console.log(req.body); res.end('SUCCESS'); return;
             var id = req.body.id;
-            db.collection('wdb_bugs')
+            db.collection('wdb_projects')
             .removeOne(
                 { '_id': new ObjectId(id) },
                 (err, result) => {
                     assert.equal(err, null);
-                    console.log("Removed document from the wdb_bugs collection.");
+                    console.log("Removed document from the wdb_projects collection.");
                     //console.log(result);
                     res.send('SUCCESS');
                     res.end();
@@ -262,7 +268,7 @@ module.exports = function() {
 , "update_dtm": new Date()
 };
             //console.log(bug,doc); res.end('SUCCESS'); return;
-            var rec = db.collection('wdb_bugs')
+            var rec = db.collection('wdb_projects')
             .update(
                 { '_id': new ObjectId(id) },
                 { '$set': doc },
@@ -279,7 +285,7 @@ module.exports = function() {
         proj_email: (db, req, res, next) => {
             //console.log(req.body); res.end('TEST'); return;
             var id = req.body.id;
-            db.collection('wdb_bugs')
+            db.collection('wdb_projects')
             .findOne(
                 { '_id': new ObjectId(id) },
                 (err, bug) => {
@@ -287,9 +293,9 @@ module.exports = function() {
                     var status = getWDBlookup("wdb_status",bug.status);
                     var priority = getWDBlookup("wdb_priority",bug.priority);
                     var bt = getWDBlookup("wdb_type",bug.bug_type);
-                    var edtm = dateFormat(bug.entry_dtm,'mm/dd/yyyy h:MM tt');
-                    var udtm = typeof(bug.update_dtm) == 'undefined' ? '' : dateFormat(bug.update_dtm,'mm/dd/yyyy h:MM tt');
-                    var cdtm = typeof(bug.closed_dtm) == 'undefined' ? '' : dateFormat(bug.closed_dtm,'mm/dd/yyyy h:MM tt');
+                    var edtm = dateFormat(bug.entry_dtm,dateFmt1);
+                    var udtm = typeof(bug.update_dtm) == 'undefined' ? '' : dateFormat(bug.update_dtm,dateFmt1);
+                    var cdtm = typeof(bug.closed_dtm) == 'undefined' ? '' : dateFormat(bug.closed_dtm,dateFmt1);
                     if (typeof(bug.user_nm) == 'string') {
                         var obj = lookups.users[bug.user_nm];
                         var ename = obj.lname + ', ' + obj.fname;
@@ -327,7 +333,7 @@ Closed Date/Time: " + cdtm + "\n\
                                 var obj = lookups.users[row.user_nm];
                                 var ename = obj.lname + ', ' + obj.fname;
                             } else var ename="";
-                            var edtm = typeof(row.entry_dtm) == 'undefined' ? '' : dateFormat(row.entry_dtm,'mm/dd/yyyy h:MM tt');
+                            var edtm = typeof(row.entry_dtm) == 'undefined' ? '' : dateFormat(row.entry_dtm,dateFmt1);
                             msg += "Date/Time: " + edtm + ", By: " + ename + "\n\
 Comments: " + row.comments + "\n";
                         }
@@ -378,13 +384,13 @@ Comments: " + row.comments + "\n";
 , "file_hash": hash
 , "entry_dtm": new Date()
 };
-            var rec = db.collection('wdb_bugs')
+            var rec = db.collection('wdb_projects')
             .update(
                 { '_id': new ObjectId(id) },
                 { '$push': { 'attachments': doc } },
                 (err, result) => {
                     assert.equal(err, null);
-                    console.log("Inserted a attachment into the wdb_bugs collection.");
+                    console.log("Inserted a attachment into the wdb_projects collection.");
                     console.log(result);
                     var pdir = hash.substr(0,3);
                     fs.access(adir + pdir, fs.R_OK | fs.W_OK, (err) => {
@@ -405,13 +411,13 @@ Comments: " + row.comments + "\n";
             var id = req.body.id;
             var hash = req.body.hash;
             // remove from wdb_bugs.attachments
-            db.collection('wdb_bugs')
+            db.collection('wdb_projects')
             .update(
                 { '_id': new ObjectId(id) },
                 { '$pull': { 'attachments.file_hash': hash } },
                 (err, result) => {
                     assert.equal(err, null);
-                    console.log("Removed attachment from the wdb_bugs collection.");
+                    console.log("Removed attachment from the wdb_projects collection.");
                     //console.log(result);
                     // delete file from fs
                     var pdir = hash.substr(0,3);
