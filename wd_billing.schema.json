@@ -13,24 +13,24 @@
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "counters",
+    "title": "wd_billing/counters",
     "description": "collection of counters",
     "type": "object",
     "required": [ "_id", "seq" ],
     "properties": {
-        "_id" : { "type": "string" }, // wdb_id
+        "_id" : { "type": "string" },
         "seq" : { "type": "integer" }
     }
 }
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "wdb_lookups",
+    "title": "wd_billing/wdb_lookups",
     "description": "collection of lookup values",
     "type": "object",
     "required": [ "_id", "items" ],
     "properties": {
-        "_id" : { "type": "string" }, // wdb_type, wdb_category, wdb_status, wdb_priority, ...
+        "_id" : { "type": "string" },
         "items" : {
             "type": "array",
             "uniqueItems": true,
@@ -49,7 +49,7 @@
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "wdb_contacts",
+    "title": "wd_billing/wdb_contacts",
     "description": "collection of contacts",
     "type": "object",
     "required": [ "cname", "address", "phone", "type", "active" ],
@@ -77,25 +77,25 @@
                 "fax" : { "type": "string" }
             }
         },
-        "type" : { "type": "string", "maxLength": 1 }, // wdb_type
+        "type" : { "type": "string", "maxLength": 1 },
         "active" : { "type": "string", "enum": [ "y", "n" ] }
     }
 }
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "wdb_clients",
+    "title": "wd_billing/wdb_clients",
     "description": "collection of clients",
     "type": "object",
     "required": [ "client_cd", "client_name", "client", "contacts", "active" ],
     "properties": {
         "client_cd" : { "type": "string" },
         "client_name" : { "type": "string" },
-        "client" : { "type": "string" }, // wdb_contacts
+        "client" : { "type": "string" },
         "contacts" : {
             "type": "array",
             "uniqueItems": true,
-            "items": { "type": "string" } // wdb_contacts
+            "items": { "type": "string" }
         },
         "hourly_rate" : { "type": "number" },
         "mileage_rate" : { "type": "number" },
@@ -107,17 +107,17 @@
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "wdb_projects",
+    "title": "wd_billing/wdb_projects",
     "description": "collection of projects",
     "type": "object",
     "required": [ "client_cd", "client_name", "client", "contacts", "active" ],
     "properties": {
-        "proj_cd" : { "type": "string" }, // client_cd.seq
-        "client_cd" : { "type": "string" }, // wdb_clients
+        "proj_cd" : { "type": "string" },
+        "client_cd" : { "type": "string" },
         "name" : { "type": "string" },
         "po_nbr" : { "type": "string" },
-        "priority" : { "type": "string" }, // wdb_priority
-        "status" : { "type": "string" }, // wdb_status
+        "priority" : { "type": "string" },
+        "status" : { "type": "string" },
         "hourly_rate" : { "type": "number" },
         "mileage_rate" : { "type": "number" },
         "distance" : { "type": "number" },
@@ -175,15 +175,15 @@
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "wdb_working_slips",
+    "title": "wd_billing/wdb_working_slips",
     "description": "collection of working slips",
     "type": "object",
     "required": [ "client_cd", "client_name", "client", "contacts", "active" ],
     "properties": {
-        "proj_cd" : { "type": "string" }, // wdb_projects
+        "proj_cd" : { "type": "string" },
         "name" : { "type": "string" },
-        "catagory" : { "type": "string" }, // wdb_category
-        "kind" : { "type": "string" }, // wdb_kind
+        "catagory" : { "type": "string" },
+        "kind" : { "type": "string" },
         "billable" : { "type": "boolean" },
         "due_date" : { "type": "string", "format": "date" },
         "duration" : {
@@ -218,12 +218,12 @@
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "wdb_statements",
+    "title": "wd_billing/wdb_statements",
     "description": "collection of statements",
     "type": "object",
     "required": [ "proj_cd", "nbr", "slips" ],
     "properties": {
-        "proj_cd" : { "type": "string" }, // wdb_projects
+        "proj_cd" : { "type": "string" },
         "nbr" : { "type": "string" },
         "inv_date" : { "type": "string", "format": "date-time" },
         "due_date" : { "type": "string", "format": "date-time" },
@@ -232,14 +232,14 @@
         "slips" : {
             "type": "array",
             "uniqueItems": true,
-            "items": { "type": "string" } // wdb_working_slips
+            "items": { "type": "string" }
         }
     }
 }
 
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "title": "wdb_users",
+    "title": "wd_billing/wdb_users",
     "description": "collection of users",
     "type": "object",
     "required": [ "uid", "lname", "active" ],
