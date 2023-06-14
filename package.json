@@ -4,16 +4,15 @@
     "description": "WildDog Billing (nodejs version)",
     "main": "index.js",
     "dependencies": {
-        "express": "~4.13.3",
-        "body-parser": "~1.14.2",
-        "consolidate": "~0.13.1",
-        "nunjucks": "~2.2.0",
-        "mongodb": "~2.1.3",
-        "fs": "~0.0.0",
-        "dateformat": "~1.0.12",
+        "body-parser": "^1.20.2",
+        "consolidate": "~1.0.0",
         "crypto": "~0.0.3",
-        "nodemailer": "~2.0.0",
-        "multer": "~1.1.0"
+        "dateformat": "~5.0.3",
+        "express": "^4.18.2",
+        "mongodb": "^5.6.0",
+        "multer": "^1.4.4-lts.1",
+        "nodemailer": "^6.9.3",
+        "nunjucks": "^3.2.4"
     },
     "author": "Ron Patterson",
     "license": "0BSD"
