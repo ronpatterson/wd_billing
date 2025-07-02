@@ -100,7 +100,7 @@ module.exports = function() {
                         }
                     }
                     //console.log(proj);
-                    res.json(bugproj
+                    res.json(proj);
                     res.end();
                 }
             );
@@ -158,7 +158,7 @@ module.exports = function() {
                 var bid = req.body.proj_cd.replace(/.*(\d+)$/,'$1');
                 var proj_cd = req.body.wdb_group + bid;
                 var doc = {
-, "proj_cd": proj_cd
+  "proj_cd": proj_cd
 , "client_id": req.client_id
 , "name": req.body.name
 , "po_nbr": req.body.po_nbr

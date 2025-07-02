@@ -17,8 +17,8 @@ const express = require('express'),
 
 // globals
 const mongo_host = 
-		'localhost',
-//		'192.168.0.25',
+//		'localhost',
+		'192.168.0.229',
 	mongo_port = '27017';
 
 // setup express.js
